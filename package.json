@@ -1,5 +1,5 @@
 {
-  "name": "@walcron/shared-context",
+  "name": "@walcron/zelda-shared-context",
   "scripts": {
     "start": "webpack serve",
     "start:standalone": "webpack serve --env standalone",
