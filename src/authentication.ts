@@ -1,18 +1,29 @@
 import { BehaviorSubject } from "rxjs";
 
-export const auth$ = new BehaviorSubject({
+type AuthProps = {
+  sessionToken: string | null;
+  error: string | undefined;
+  pending: boolean;
+};
+
+export const INTERVAL_CHECK_IN_MILISECONDS = 2500;
+
+export const auth$ = new BehaviorSubject<AuthProps>({
   sessionToken: localStorage.getItem("sessionToken"),
-  error: false,
+  error: undefined,
   pending: false,
 });
 
 // This promise represents a request being made to some backend to have the user validated and logged in
 // but is mocked here for convenience. I don't want to have to setup a backend just for this example.
-const GET_LOGGED_IN = (username, password) =>
+const GET_LOGGED_IN = (
+  username: string,
+  password: string
+): Promise<AuthProps> =>
   new Promise((resolve, reject) => {
     auth$.next({
       sessionToken: null,
-      error: false,
+      error: undefined,
       pending: true,
     });
     setTimeout(() => {
@@ -21,7 +32,7 @@ const GET_LOGGED_IN = (username, password) =>
         localStorage.setItem("sessionToken", sessionToken);
         resolve({
           sessionToken,
-          error: false,
+          error: undefined,
           pending: false,
         });
       } else {
@@ -32,10 +43,10 @@ const GET_LOGGED_IN = (username, password) =>
           pending: false,
         });
       }
-    }, 2500);
+    }, INTERVAL_CHECK_IN_MILISECONDS);
   });
 
-export function login(username, password) {
+export function login(username: string, password: string) {
   if (!auth$.value.pending) {
     GET_LOGGED_IN(username, password).then((user) => {
       auth$.next(user);
@@ -44,10 +55,10 @@ export function login(username, password) {
 }
 
 export function logout() {
-  // Trigger side-effects
   localStorage.removeItem("sessionToken");
   auth$.next({
     sessionToken: null,
-    error: false,
+    error: undefined,
+    pending: false,
   });
 }

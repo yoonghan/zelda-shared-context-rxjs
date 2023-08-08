@@ -4,7 +4,6 @@
     "jsx": "react-jsx",
     "declarationDir": "dist"
   },
-  "files": ["src/walcron-zelda-shared-context.js"],
-  "include": ["src/**/*"],
-  "exclude": ["src/**/*.test*"]
+  "files": ["src/walcron-zelda-shared-context.ts"],
+  "include": ["src/**/*"]
 }
