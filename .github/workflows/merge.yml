@@ -1,0 +1,81 @@
+name: Report merged result on master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  mergeCodes:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "npm"
+          registry-url: https://npm.pkg.github.com/
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: 📥 Download deps
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # as requested by the React team :)
+      # https://reactjs.org/blog/2019/10/22/react-release-channels.html#using-the-next-channel-for-integration-testing
+      - name: ⚛️ Setup react
+        run: npm install react@${{ matrix.react }} react-dom@${{ matrix.react }}
+
+      - name: ✅ Validate test script
+        run: npm run test:ci
+
+      - name: 📤 Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+
+      - name: ▶️ Create new distribution and ts files
+        run: npm run build && npm run build:tsc
+
+      - name: ⬇️ Checkout container repo
+        uses: actions/checkout@v3
+        with:
+          repository: yoonghan/zelda-root
+          token: ${{ secrets.CONTAINER_PAT }}
+          path: zelda-root
+
+      - name: ⬆️ Publish latest dist/ to zelda-root
+        run: |
+          BRANCH_NAME=shared-context-dist-$(date +%s)
+          cd zelda-root
+          git branch $BRANCH_NAME
+          git checkout $BRANCH_NAME
+          cd ..
+          rm -rf zelda-root/external_modules/shared-context
+          mkdir zelda-root/external_modules/shared-context
+          cp -rf dist/* container/external_modules/shared-context
+          cd container
+          git config user.name ${{ vars.GH_USER_NAME }}
+          git config user.email ${{ vars.GH_USER_EMAIL }}
+          git add .
+          git commit -m "Generate new shared-context dist"
+          git push origin $BRANCH_NAME
+          gh pr create --base master --title "New Shared Context distribution" --body "New shared context has been generated and merged to master"
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.CONTAINER_PAT }}
