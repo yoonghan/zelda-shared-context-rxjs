@@ -45,9 +45,8 @@ chmod a+x .husky/pre-commit
 
 ## Github PAT permission required
 
-1. For accessing private repo, please allow Profile -> Settings -> Personal Access Token (classic), open read:packages (basically th esame as vercel deployment). For more info refer: https://docs.github.com/en/packages/working-with-a-github-packages-registry. Add as Github secret in Settings->Secrets And variable and add NPM_TOKEN key. NOTE: In merge NODE_AUTH_TOKEN is used instead.
-2. Create a PAT for zelda-root repository, with these permission , personal profile -> Developer Settings -> Fine Grain Token -> Actions(R)/Commit Statues(RW)/Contents(RW)/Metadata(R)/Pull Request(RW). Add into secret variable with key of CONTAINER_PAT.
-3. Add 2 repository variables(not secret), GH_USER_NAME and GH_USER_EMAIL for distribution commit.
+1. Create a PAT for zelda-root repository, with these permission , personal profile -> Developer Settings -> Fine Grain Token -> Actions(R)/Commit Statues(RW)/Contents(RW)/Metadata(R)/Pull Request(RW). Add into secret variable with key of CONTAINER_PAT.
+2. Add 2 repository variables(not secret), GH_USER_NAME and GH_USER_EMAIL for distribution commit.
 
 [build-badge]: https://img.shields.io/github/actions/workflow/status/yoonghan/zelda-shared-context-rxjs/pull-request.yml
 [build]: https://github.com/yoonghan/zelda-shared-context-rxjs/actions?query=workflow
