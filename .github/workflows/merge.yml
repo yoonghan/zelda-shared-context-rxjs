@@ -62,17 +62,18 @@ jobs:
       - name: ⬆️ Publish latest dist/ to zelda-root
         env:
           Project_Name: shared-context
+          Container_Name: zelda-root
           GH_TOKEN: ${{ secrets.CONTAINER_PAT }}
         run: |
           BRANCH_NAME=shared-context-dist-$(date +%s)
-          cd zelda-root
+          cd ${{ env.Container_Name }}
           git branch $BRANCH_NAME
           git checkout $BRANCH_NAME
           cd ..
-          rm -rf zelda-root/external_modules/${{ env.Project_Name }}
-          mkdir zelda-root/external_modules/${{ env.Project_Name }}
-          cp -rf dist/* container/external_modules/${{ env.Project_Name }}
-          cd container
+          rm -rf ${{ env.Container_Name }}/external_modules/${{ env.Project_Name }}
+          mkdir ${{ env.Container_Name }}/external_modules/${{ env.Project_Name }}
+          cp -rf dist/* ${{ env.Container_Name }}/external_modules/${{ env.Project_Name }}
+          cd ${{ env.Container_Name }}
           git config user.name ${{ vars.GH_USER_NAME }}
           git config user.email ${{ vars.GH_USER_EMAIL }}
           git add .
