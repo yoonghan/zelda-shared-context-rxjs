@@ -29,7 +29,6 @@ const getFiles = (srcpath: string): string[] => {
 };
 
 const allDeclarationFiles = getFiles(declarationPath);
-console.log(allDeclarationFiles);
 const declarationFileExceptMain = allDeclarationFiles.filter(
   (fileName) => fileName !== `${declarationPath}/${mainFile}.d.ts`
 );
