@@ -52,34 +52,30 @@ jobs:
       - name: ▶️ Create new distribution and ts files
         run: npm run build
 
-      - name: ⬇️ Checkout container repo
+      - name: ⬇️ Checkout zelda-root repo
         uses: actions/checkout@v3
         with:
           repository: yoonghan/zelda-root
-          token: ${{ secrets.CONTAINER_PAT }}
+          token: ${{ secrets.ROOT_PAT }}
           path: zelda-root
 
       - name: ⬆️ Publish latest dist/ to zelda-root
-        env:
-          Project_Name: shared-context
-          Container_Name: zelda-root
-          GH_TOKEN: ${{ secrets.CONTAINER_PAT }}
         run: |
-          BRANCH_NAME=shared-context-dist-$(date +%s)
-          cd ${{ env.Container_Name }}
-          git branch $BRANCH_NAME
-          git checkout $BRANCH_NAME
-          cd ..
-          rm -rf ${{ env.Container_Name }}/external_modules/${{ env.Project_Name }}
-          mkdir ${{ env.Container_Name }}/external_modules/${{ env.Project_Name }}
-          cp -rf dist/* ${{ env.Container_Name }}/external_modules/${{ env.Project_Name }}
-          echo "list distribution folder"
-          ls -lrt dist/*
-          cd ${{ env.Container_Name }}
-          git config user.name ${{ vars.GH_USER_NAME }}
-          git config user.email ${{ vars.GH_USER_EMAIL }}
-          git add .
-          git commit -m "Generate new ${{ env.Project_Name }} dist"
-          git push origin $BRANCH_NAME
-          gh pr create --base master --title "New ${{ env.Project_Name }} distribution" --body "New declaration generated and ready to be merged to master"
+          chmod a+x ./.github/scripts/create-pull-request.sh
+          ./.github/scripts/create-pull-request.sh zelda-root
+        shell: bash
+        continue-on-error: true
+
+      - name: ⬇️ Checkout zelda-auth-react repo
+        uses: actions/checkout@v3
+        with:
+          repository: yoonghan/zelda-auth-react
+          token: ${{ secrets.AUTH_REACT_PAT }}
+          path: zelda-auth-react
+
+      - name: ⬆️ Publish latest dist/ to zelda-auth-react
+        run: |
+          chmod a+x ./.github/scripts/create-pull-request.sh
+          ./.github/scripts/create-pull-request.sh zelda-auth-react
+        shell: bash
         continue-on-error: true

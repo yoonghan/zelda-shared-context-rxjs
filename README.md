@@ -45,7 +45,7 @@ chmod a+x .husky/pre-commit
 
 ## Github PAT permission required
 
-1. Create a PAT for zelda-root repository, with these permission , personal profile -> Developer Settings -> Fine Grain Token -> Actions(R)/Commit Statues(RW)/Contents(RW)/Metadata(R)/Pull Request(RW). Add into secret variable with key of CONTAINER_PAT.
+1. Create a PAT with these permission , personal profile -> Developer Settings -> Fine Grain Token -> Actions(R)/Commit Statues(RW)/Contents(RW)/Metadata(R)/Pull Request(RW). Add into secret variable with key of ROOT_PAT(zelda-root), AUTH_REACT_PAT(zelda-auth-react).
 2. Add 2 repository variables(not secret), GH_USER_NAME and GH_USER_EMAIL for distribution commit.
 
 [build-badge]: https://img.shields.io/github/actions/workflow/status/yoonghan/zelda-shared-context-rxjs/pull-request.yml
