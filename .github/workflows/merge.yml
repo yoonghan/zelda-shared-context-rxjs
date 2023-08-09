@@ -62,7 +62,7 @@ jobs:
       - name: ⬆️ Publish latest dist/ to zelda-root
         run: |
           chmod a+x ./.github/scripts/create-pull-request.sh
-          ./.github/scripts/create-pull-request.sh zelda-root
+          ./.github/scripts/create-pull-request.sh zelda-root ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
         shell: bash
         continue-on-error: true
 
@@ -76,6 +76,6 @@ jobs:
       - name: ⬆️ Publish latest dist/ to zelda-auth-react
         run: |
           chmod a+x ./.github/scripts/create-pull-request.sh
-          ./.github/scripts/create-pull-request.sh zelda-auth-react
+          ./.github/scripts/create-pull-request.sh zelda-auth-react ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
         shell: bash
         continue-on-error: true

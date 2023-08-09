@@ -1,8 +1,8 @@
 BRANCH_NAME=shared-context-dist-$(date +%s)
-REPO_NAME=$1
 PROJECT_NAME=shared-context
-GH_USER_NAME=${{ vars.GH_USER_NAME }}
-GH_USER_EMAIL=${{ vars.GH_USER_EMAIL }}
+REPO_NAME=$1
+GH_USER_NAME=$2
+GH_USER_EMAIL=$3
 
 echo "BRANCH_NAME: $BRANCH_NAME"
 echo "REPO_NAME: $REPO_NAME"
