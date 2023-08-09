@@ -70,3 +70,6 @@ dist
 *.sln
 *.sw?
 .DS_Store
+
+# For typescript declaration used only
+declaration
