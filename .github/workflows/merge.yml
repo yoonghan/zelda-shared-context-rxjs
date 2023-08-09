@@ -76,12 +76,9 @@ jobs:
           echo "list distribution folder"
           ls -lrt dist/*
           cd ${{ env.Container_Name }}
-          echo "list root folder"
-          ls -lrt external_modules/${{ env.Project_Name }}
           git config user.name ${{ vars.GH_USER_NAME }}
           git config user.email ${{ vars.GH_USER_EMAIL }}
           git add .
-          git add typings/types.d.ts
           git commit -m "Generate new ${{ env.Project_Name }} dist"
           git push origin $BRANCH_NAME
           gh pr create --base master --title "New ${{ env.Project_Name }} distribution" --body "New declaration generated and ready to be merged to master"
