@@ -50,7 +50,9 @@ jobs:
         uses: codecov/codecov-action@v3
 
       - name: ▶️ Create new distribution and ts files
-        run: npm run build
+        run: |
+          npm run build:webpack && npm run build:types
+          ls -lrt dist/*
 
       - name: ⬇️ Checkout container repo
         uses: actions/checkout@v3
