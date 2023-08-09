@@ -72,6 +72,7 @@ jobs:
           cd ..
           rm -rf ${{ env.Container_Name }}/external_modules/${{ env.Project_Name }}
           mkdir ${{ env.Container_Name }}/external_modules/${{ env.Project_Name }}
+          ls -lrt dist/*
           cp -rf dist/* ${{ env.Container_Name }}/external_modules/${{ env.Project_Name }}
           cd ${{ env.Container_Name }}
           git config user.name ${{ vars.GH_USER_NAME }}
