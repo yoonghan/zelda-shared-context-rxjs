@@ -60,6 +60,8 @@ jobs:
           path: zelda-root
 
       - name: ⬆️ Publish latest dist/ to zelda-root
+        env:
+          GH_TOKEN: ${{ secrets.ROOT_PAT }}
         run: |
           chmod a+x ./.github/scripts/create-pull-request.sh
           ./.github/scripts/create-pull-request.sh zelda-root ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
@@ -74,6 +76,8 @@ jobs:
           path: zelda-auth-react
 
       - name: ⬆️ Publish latest dist/ to zelda-auth-react
+        env:
+          GH_TOKEN: ${{ secrets.AUTH_REACT_PAT }}
         run: |
           chmod a+x ./.github/scripts/create-pull-request.sh
           ./.github/scripts/create-pull-request.sh zelda-auth-react ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}

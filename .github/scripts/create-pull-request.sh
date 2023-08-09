@@ -15,6 +15,7 @@ git branch $BRANCH_NAME
 git checkout $BRANCH_NAME
 cd ..
 rm -rf $REPO_NAME/external_modules/$PROJECT_NAME
+mkdir $REPO_NAME/external_modules
 mkdir $REPO_NAME/external_modules/$PROJECT_NAME
 cp -rf dist/* $REPO_NAME/external_modules/$PROJECT_NAME
 echo "list distribution folder"
