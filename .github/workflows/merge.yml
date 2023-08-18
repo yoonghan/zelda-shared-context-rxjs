@@ -88,12 +88,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: yoonghan/zelda-nav-react
-          token: ${{ secrets.AUTH_NAV_PAT }}
+          token: ${{ secrets.NAV_SVELTE_PAT }}
           path: zelda-nav-react
 
       - name: ⬆️ Publish latest dist/ to zelda-nav-react
         env:
-          GH_TOKEN: ${{ secrets.AUTH_NAV_PAT }}
+          GH_TOKEN: ${{ secrets.NAV_SVELTE_PAT }}
         run: |
           chmod a+x ./.github/scripts/create-pull-request.sh
           ./.github/scripts/create-pull-request.sh zelda-nav-react ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
