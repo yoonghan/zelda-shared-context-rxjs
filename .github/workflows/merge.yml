@@ -83,3 +83,19 @@ jobs:
           ./.github/scripts/create-pull-request.sh zelda-auth-react ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
         shell: bash
         continue-on-error: true
+
+      - name: ⬇️ Checkout zelda-nav-react repo
+        uses: actions/checkout@v3
+        with:
+          repository: yoonghan/zelda-nav-react
+          token: ${{ secrets.NAV_SVELTE_PAT }}
+          path: zelda-nav-react
+
+      - name: ⬆️ Publish latest dist/ to zelda-nav-react
+        env:
+          GH_TOKEN: ${{ secrets.NAV_SVELTE_PAT }}
+        run: |
+          chmod a+x ./.github/scripts/create-pull-request.sh
+          ./.github/scripts/create-pull-request.sh zelda-nav-react ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
+        shell: bash
+        continue-on-error: true
