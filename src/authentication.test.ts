@@ -1,3 +1,4 @@
+import { credentials, sessionToken } from "./const/sample";
 import {
   INTERVAL_CHECK_IN_MILISECONDS,
   auth$,
@@ -15,7 +16,7 @@ describe("authentication", () => {
   });
 
   it("should be able to login successfully, then logout", (done) => {
-    login("exampleuser", "examplepassword");
+    login(credentials.username, credentials.password);
 
     expect(auth$.value).toStrictEqual({
       sessionToken: null,
@@ -25,7 +26,7 @@ describe("authentication", () => {
 
     setTimeout(() => {
       expect(auth$.value).toStrictEqual({
-        sessionToken: "abc123def456",
+        sessionToken,
         error: undefined,
         pending: false,
       });

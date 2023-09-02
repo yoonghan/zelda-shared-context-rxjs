@@ -1,4 +1,5 @@
 import { BehaviorSubject } from "rxjs";
+import { credentials, sessionToken } from "./const/sample";
 
 type AuthProps = {
   sessionToken: string | null;
@@ -20,15 +21,17 @@ const GET_LOGGED_IN = (
   username: string,
   password: string
 ): Promise<AuthProps> =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     auth$.next({
       sessionToken: null,
       error: undefined,
       pending: true,
     });
     setTimeout(() => {
-      if (username === "exampleuser" && password === "examplepassword") {
-        const sessionToken = "abc123def456";
+      if (
+        username === credentials.username &&
+        password === credentials.password
+      ) {
         localStorage.setItem("sessionToken", sessionToken);
         resolve({
           sessionToken,
