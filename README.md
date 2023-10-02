@@ -43,7 +43,7 @@ chmod a+x .husky/pre-commit
 @yoonghan:registry=https://npm.pkg.github.com/
 ```
 
-## Github PAT permission required
+## Github PAT granting permission to push to external projects
 
 1. Create a PAT with these permission , personal profile -> Developer Settings -> Fine Grain Token -> Actions(R)/Commit Statues(RW)/Contents(RW)/Metadata(R)/Pull Request(RW). Add into secret variable with key of ROOT_PAT(zelda-root), AUTH_REACT_PAT(zelda-auth-react), NAV_SVELTE_PAT(zelda-nav-react).
 2. Add 2 repository variables(not secret), GH_USER_NAME and GH_USER_EMAIL for distribution commit.
