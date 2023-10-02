@@ -23,6 +23,7 @@ ls -lrt dist/*
 cd $REPO_NAME
 git config user.name $GH_USER_NAME
 git config user.email $GH_USER_EMAIL
+git add typings
 git add .
 git commit -m "Generate new $PROJECT_NAME dist"
 git push origin $BRANCH_NAME
