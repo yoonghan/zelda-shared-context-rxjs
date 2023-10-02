@@ -84,6 +84,22 @@ jobs:
         shell: bash
         continue-on-error: true
 
+      - name: ⬇️ Checkout zelda-main-react repo
+        uses: actions/checkout@v3
+        with:
+          repository: yoonghan/zelda-main-react
+          token: ${{ secrets.MAIN_REACT_PAT }}
+          path: zelda-main-react
+
+      - name: ⬆️ Publish latest dist/ to zelda-main-react
+        env:
+          GH_TOKEN: ${{ secrets.MAIN_REACT_PAT }}
+        run: |
+          chmod a+x ./.github/scripts/create-pull-request.sh
+          ./.github/scripts/create-pull-request.sh zelda-main-react ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
+        shell: bash
+        continue-on-error: true
+
       - name: ⬇️ Checkout zelda-nav-svelte repo
         uses: actions/checkout@v3
         with:
