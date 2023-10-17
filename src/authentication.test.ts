@@ -1,75 +1,75 @@
-import { credentials, sessionToken } from "./const/sample";
+import { credentials, sessionToken } from './const/sample'
 import {
   INTERVAL_CHECK_IN_MILISECONDS,
   auth$,
   login,
   logout,
-} from "./walcron-zelda-shared-context";
+} from './walcron-zelda-shared-context'
 
-describe("authentication", () => {
-  it("should have default auth$ can subscribe and unsubscribe", async () => {
+describe('authentication', () => {
+  it('should have default auth$ can subscribe and unsubscribe', async () => {
     expect(auth$.value).toStrictEqual({
       pending: false,
       error: undefined,
       sessionToken: null,
-    });
-  });
+    })
+  })
 
-  it("should be able to login successfully, then logout", (done) => {
-    login(credentials.username, credentials.password);
+  it('should be able to login successfully, then logout', (done) => {
+    login(credentials.username, credentials.password)
 
     expect(auth$.value).toStrictEqual({
       sessionToken: null,
       error: undefined,
       pending: true,
-    });
+    })
 
     setTimeout(() => {
       expect(auth$.value).toStrictEqual({
         sessionToken,
         error: undefined,
         pending: false,
-      });
-      logout();
+      })
+      logout()
       expect(auth$.value).toStrictEqual({
         pending: false,
         error: undefined,
         sessionToken: null,
-      });
-      done();
-    }, INTERVAL_CHECK_IN_MILISECONDS);
-  });
+      })
+      done()
+    }, INTERVAL_CHECK_IN_MILISECONDS)
+  })
 
-  it("should be able fail to login, and still triggers logout", (done) => {
-    login("invaliduser", "invalidpassword");
+  it('should be able fail to login, and still triggers logout', (done) => {
+    login('invaliduser', 'invalidpassword')
     expect(auth$.value).toStrictEqual({
       sessionToken: null,
       error: undefined,
       pending: true,
-    });
+    })
     setTimeout(() => {
       expect(auth$.value).toStrictEqual({
         sessionToken: null,
-        error: "Invalid user or password",
+        error: 'Invalid user or password',
         pending: false,
-      });
-      logout();
+      })
+      logout()
       expect(auth$.value).toStrictEqual({
         pending: false,
         error: undefined,
         sessionToken: null,
-      });
-      done();
-    }, INTERVAL_CHECK_IN_MILISECONDS);
-  });
+      })
+      done()
+    }, INTERVAL_CHECK_IN_MILISECONDS)
+  })
 
   it("should skip double relogin relogin when it's pending", () => {
-    login("invaliduser", "invalidpassword");
-    login("invaliduser", "invalidpassword");
+    login('invaliduser', 'invalidpassword')
+    login('invaliduser', 'invalidpassword')
     expect(auth$.value).toStrictEqual({
       sessionToken: null,
       error: undefined,
       pending: true,
-    });
-  });
-});
+    })
+  })
+})

@@ -1,3 +1,3 @@
-export * from "./authentication";
+export * from './authentication'
 
-export const name = "shared-context";
+export const name = 'shared-context'
