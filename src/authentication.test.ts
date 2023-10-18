@@ -1,10 +1,6 @@
-import { credentials, sessionToken } from './const/sample'
-import {
-  INTERVAL_CHECK_IN_MILISECONDS,
-  auth$,
-  login,
-  logout,
-} from './walcron-zelda-shared-context'
+import './__mocks__/firebase/auth'
+import { credentials } from './__mocks__/const'
+import { auth$, login, logout } from './authentication'
 
 describe('authentication', () => {
   it('should have default auth$ can subscribe and unsubscribe', async () => {
@@ -26,7 +22,7 @@ describe('authentication', () => {
 
     setTimeout(() => {
       expect(auth$.value).toStrictEqual({
-        sessionToken,
+        sessionToken: 'testToken',
         error: undefined,
         pending: false,
       })
@@ -37,7 +33,7 @@ describe('authentication', () => {
         sessionToken: null,
       })
       done()
-    }, INTERVAL_CHECK_IN_MILISECONDS)
+    }, 200)
   })
 
   it('should be able fail to login, and still triggers logout', (done) => {
@@ -60,7 +56,7 @@ describe('authentication', () => {
         sessionToken: null,
       })
       done()
-    }, INTERVAL_CHECK_IN_MILISECONDS)
+    }, 200)
   })
 
   it("should skip double relogin relogin when it's pending", () => {
