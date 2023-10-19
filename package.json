@@ -12,7 +12,9 @@
     "check-format": "prettier --check .",
     "test": "cross-env BABEL_ENV=test jest",
     "test:watch": "cross-env BABEL_ENV=test jest --watch",
-    "test:ci": "cross-env BABEL_ENV=test jest --coverage"
+    "test:ci": "cross-env BABEL_ENV=test jest --coverage",
+    "e2e": "cross-env BABEL_ENV=test jest --config=e2e.jest.config.ts",
+    "e2e:watch": "cross-env BABEL_ENV=test jest --config=e2e.jest.config.ts --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
@@ -58,7 +60,8 @@
     "webpack-config-single-spa-react-ts": "^4.0.0",
     "webpack-config-single-spa-ts": "^4.0.0",
     "webpack-dev-server": "^4.0.0",
-    "webpack-merge": "^5.8.0"
+    "webpack-merge": "^5.8.0",
+    "whatwg-fetch": "^3.6.19"
   },
   "dependencies": {
     "@types/react": "^17.0.19",
