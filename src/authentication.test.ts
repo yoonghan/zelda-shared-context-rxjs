@@ -1,5 +1,5 @@
-import './__mocks__/firebase/auth'
-import { credentials } from './__mocks__/const'
+import './__custom_mocks__/firebase/auth'
+import { credentials } from './__custom_mocks__/const'
 import { auth$, create, login, logout } from './authentication'
 
 describe('authentication', () => {

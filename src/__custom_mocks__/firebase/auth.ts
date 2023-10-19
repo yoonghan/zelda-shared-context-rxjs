@@ -1,4 +1,4 @@
-import { credentials } from '../../__mocks__/const'
+import { credentials } from '../const'
 
 const testUsername = credentials.username
 const testPassword = credentials.password
