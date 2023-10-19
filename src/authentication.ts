@@ -1,67 +1,79 @@
-import { BehaviorSubject } from "rxjs";
-import { credentials, sessionToken } from "./const/sample";
+import { BehaviorSubject } from 'rxjs'
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  createUserWithEmailAndPassword,
+  type UserCredential,
+  type Auth,
+} from 'firebase/auth'
+import { Firebase } from './Firebase'
 
 type AuthProps = {
-  sessionToken: string | null;
-  error: string | undefined;
-  pending: boolean;
-};
+  sessionToken: string | null
+  error: string | undefined
+  pending: boolean
+}
 
-export const INTERVAL_CHECK_IN_MILISECONDS = 2500;
+export const SESSION_KEY = 'sessionToken'
 
 export const auth$ = new BehaviorSubject<AuthProps>({
-  sessionToken: localStorage.getItem("sessionToken"),
+  sessionToken: localStorage.getItem(SESSION_KEY),
   error: undefined,
   pending: false,
-});
+})
 
-// This promise represents a request being made to some backend to have the user validated and logged in
-// but is mocked here for convenience. I don't want to have to setup a backend just for this example.
-const GET_LOGGED_IN = (
+export async function create(username: string, password: string) {
+  return await loginOrCreate(createUserWithEmailAndPassword, username, password)
+}
+
+export async function login(username: string, password: string) {
+  return await loginOrCreate(signInWithEmailAndPassword, username, password)
+}
+
+async function loginOrCreate(
+  fn: (auth: Auth, email: string, password: string) => Promise<UserCredential>,
   username: string,
   password: string
-): Promise<AuthProps> =>
-  new Promise((resolve) => {
-    auth$.next({
+): Promise<AuthProps> {
+  if (!auth$.value.pending) {
+    let result = {
       sessionToken: null,
       error: undefined,
       pending: true,
-    });
-    setTimeout(() => {
-      if (
-        username === credentials.username &&
-        password === credentials.password
-      ) {
-        localStorage.setItem("sessionToken", sessionToken);
-        resolve({
-          sessionToken,
-          error: undefined,
-          pending: false,
-        });
-      } else {
-        // Why resolve when invalid? Because the "backend" provided a valid response
-        resolve({
-          sessionToken: null,
-          error: "Invalid user or password",
-          pending: false,
-        });
-      }
-    }, INTERVAL_CHECK_IN_MILISECONDS);
-  });
+    }
 
-export function login(username: string, password: string) {
-  if (!auth$.value.pending) {
-    GET_LOGGED_IN(username, password).then((user) => {
-      auth$.next(user);
-    });
+    auth$.next(result)
+
+    try {
+      const userCredential = await fn(Firebase.getAuth(), username, password)
+      const user = userCredential.user
+      const idToken = await user.getIdToken(false)
+
+      result = {
+        sessionToken: idToken,
+        error: undefined,
+        pending: false,
+      }
+      localStorage.setItem(SESSION_KEY, idToken)
+    } catch (error) {
+      result = {
+        sessionToken: null,
+        error: error.message,
+        pending: false,
+      }
+    }
+
+    auth$.next(result)
+    return result
   }
 }
 
 export function logout() {
-  localStorage.removeItem("sessionToken");
+  signOut(Firebase.getAuth())
+  localStorage.removeItem(SESSION_KEY)
   auth$.next({
     sessionToken: null,
     error: undefined,
     pending: false,
-  });
+  })
 }

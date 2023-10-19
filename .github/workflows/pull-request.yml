@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-          cache: "npm"
+          cache: 'npm'
 
       - name: Cache dependencies
         id: cache
@@ -49,8 +49,8 @@ jobs:
         with:
           filename: coverage/**/cobertura-coverage.xml
           badge: true
-          format: "markdown"
-          output: "both"
+          format: 'markdown'
+          output: 'both'
 
       - name: + Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
@@ -58,3 +58,6 @@ jobs:
         with:
           recreate: true
           path: code-coverage-results.md
+
+      - name: ✅ Validate e2e script
+        run: npm run e2e

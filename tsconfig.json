@@ -5,6 +5,5 @@
     "declarationDir": "declaration"
   },
   "files": ["src/walcron-zelda-shared-context.ts"],
-  "include": ["src/**/*"],
-  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"]
+  "include": ["src/**/*"]
 }
