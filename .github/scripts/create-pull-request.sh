@@ -18,7 +18,7 @@ rm -rf $REPO_NAME/external_modules/$PROJECT_NAME
 mkdir $REPO_NAME/external_modules
 mkdir $REPO_NAME/external_modules/$PROJECT_NAME
 mkdir $REPO_NAME/external_modules/$PROJECT_NAME/typings
-cp -rf dist/typings/* $REPO_NAME/external_modules/$PROJECT_NAME
+cp -rf dist/typings/* $REPO_NAME/external_modules/$PROJECT_NAME/typings
 echo "list distribution folder"
 ls -lrt dist/*
 cd $REPO_NAME
