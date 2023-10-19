@@ -59,11 +59,15 @@ jobs:
           token: ${{ secrets.ROOT_PAT }}
           path: zelda-root
 
+      - name: Enable pull request execution
+        run: |
+          chmod a+x ./.github/scripts/create-pull-request.sh
+        shell: bash
+
       - name: ⬆️ Publish latest dist/ to zelda-root
         env:
           GH_TOKEN: ${{ secrets.ROOT_PAT }}
         run: |
-          chmod a+x ./.github/scripts/create-pull-request.sh
           ./.github/scripts/create-pull-request.sh zelda-root ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
         shell: bash
         continue-on-error: true
@@ -79,7 +83,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.AUTH_REACT_PAT }}
         run: |
-          chmod a+x ./.github/scripts/create-pull-request.sh
           ./.github/scripts/create-pull-request.sh zelda-auth-react ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
         shell: bash
         continue-on-error: true
@@ -95,7 +98,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.MAIN_REACT_PAT }}
         run: |
-          chmod a+x ./.github/scripts/create-pull-request.sh
           ./.github/scripts/create-pull-request.sh zelda-main-react ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
         shell: bash
         continue-on-error: true
@@ -111,7 +113,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.NAV_SVELTE_PAT }}
         run: |
-          chmod a+x ./.github/scripts/create-pull-request.sh
           ./.github/scripts/create-pull-request.sh zelda-nav-svelte ${{ vars.GH_USER_NAME }} ${{ vars.GH_USER_EMAIL }}
         shell: bash
         continue-on-error: true
