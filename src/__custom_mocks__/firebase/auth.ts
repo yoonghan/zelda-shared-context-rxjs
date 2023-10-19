@@ -1,9 +1,5 @@
-import { credentials } from '../const'
-
-const testUsername = credentials.username
-const testPassword = credentials.password
-
-const firebaseAuth = {
+jest.mock('firebase/auth', () => ({
+  ...jest.mock('firebase/auth'),
   createUserWithEmailAndPassword: async (
     auth: unknown,
     username: string
@@ -26,7 +22,10 @@ const firebaseAuth = {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     password: string
   ) => {
-    if (username === testUsername && password === testPassword) {
+    if (
+      username === 'walcoorperation@gmail.com' &&
+      password === 'samplePassword'
+    ) {
       return {
         uid: 'testUid',
         username,
@@ -46,11 +45,4 @@ const firebaseAuth = {
     //auth()
   },
   getAuth: () => {},
-}
-
-jest.mock('firebase/auth', () => ({
-  ...jest.mock('firebase/auth'),
-  ...firebaseAuth,
 }))
-
-export default firebaseAuth
