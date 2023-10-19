@@ -22,45 +22,49 @@ export const auth$ = new BehaviorSubject<AuthProps>({
   pending: false,
 })
 
-export function create(username: string, password: string) {
-  loginOrCreate(createUserWithEmailAndPassword, username, password)
+export async function create(username: string, password: string) {
+  return await loginOrCreate(createUserWithEmailAndPassword, username, password)
 }
 
-export function login(username: string, password: string) {
-  loginOrCreate(signInWithEmailAndPassword, username, password)
+export async function login(username: string, password: string) {
+  return await loginOrCreate(signInWithEmailAndPassword, username, password)
 }
 
-function loginOrCreate(
+async function loginOrCreate(
   fn: (auth: Auth, email: string, password: string) => Promise<UserCredential>,
   username: string,
   password: string
-) {
+): Promise<AuthProps> {
   if (!auth$.value.pending) {
-    auth$.next({
+    let result = {
       sessionToken: null,
       error: undefined,
       pending: true,
-    })
+    }
 
-    fn(Firebase.getAuth(), username, password)
-      .then((userCredential) => {
-        const user = userCredential.user
-        user.getIdToken(false).then((idToken) => {
-          localStorage.setItem(SESSION_KEY, idToken)
-          auth$.next({
-            sessionToken: idToken,
-            error: undefined,
-            pending: false,
-          })
-        })
-      })
-      .catch((error) => {
-        auth$.next({
-          sessionToken: null,
-          error: error.message,
-          pending: false,
-        })
-      })
+    auth$.next(result)
+
+    try {
+      const userCredential = await fn(Firebase.getAuth(), username, password)
+      const user = userCredential.user
+      const idToken = await user.getIdToken(false)
+
+      result = {
+        sessionToken: idToken,
+        error: undefined,
+        pending: false,
+      }
+      localStorage.setItem(SESSION_KEY, idToken)
+    } catch (error) {
+      result = {
+        sessionToken: null,
+        error: error.message,
+        pending: false,
+      }
+    }
+
+    auth$.next(result)
+    return result
   }
 }
 
