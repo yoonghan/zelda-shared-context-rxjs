@@ -4,6 +4,22 @@ const testUsername = credentials.username
 const testPassword = credentials.password
 
 const firebaseAuth = {
+  createUserWithEmailAndPassword: async (
+    auth: unknown,
+    username: string
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ) => {
+    return {
+      uid: 'testUid',
+      username,
+      user: {
+        getIdToken: () =>
+          new Promise((resolve) => {
+            resolve('testToken')
+          }),
+      },
+    }
+  },
   signInWithEmailAndPassword: async (
     auth: unknown,
     username: string,

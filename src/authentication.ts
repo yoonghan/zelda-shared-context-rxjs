@@ -1,5 +1,11 @@
 import { BehaviorSubject } from 'rxjs'
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  createUserWithEmailAndPassword,
+  type UserCredential,
+  type Auth,
+} from 'firebase/auth'
 import { Firebase } from './Firebase'
 
 type AuthProps = {
@@ -16,7 +22,19 @@ export const auth$ = new BehaviorSubject<AuthProps>({
   pending: false,
 })
 
+export function create(username: string, password: string) {
+  loginOrCreate(createUserWithEmailAndPassword, username, password)
+}
+
 export function login(username: string, password: string) {
+  loginOrCreate(signInWithEmailAndPassword, username, password)
+}
+
+function loginOrCreate(
+  fn: (auth: Auth, email: string, password: string) => Promise<UserCredential>,
+  username: string,
+  password: string
+) {
   if (!auth$.value.pending) {
     auth$.next({
       sessionToken: null,
@@ -24,7 +42,7 @@ export function login(username: string, password: string) {
       pending: true,
     })
 
-    signInWithEmailAndPassword(Firebase.getAuth(), username, password)
+    fn(Firebase.getAuth(), username, password)
       .then((userCredential) => {
         const user = userCredential.user
         user.getIdToken(false).then((idToken) => {
