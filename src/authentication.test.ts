@@ -61,48 +61,32 @@ describe('authentication', () => {
     }, 200)
   })
 
-  it('should be able to create user successfully, then logout', (done) => {
-    create(credentials.username, credentials.password)
+  it('should be able to create user successfully, then logout', async () => {
+    const response = await create(credentials.username, credentials.password)
 
-    expect(auth$.value).toStrictEqual({
-      sessionToken: null,
+    expect(response).toStrictEqual({
+      isProfileUpdated: true,
+      sessionToken: 'testToken',
       error: undefined,
-      pending: true,
+      pending: false,
     })
-
-    setTimeout(() => {
-      expect(auth$.value).toStrictEqual({
-        sessionToken: 'testToken',
-        error: undefined,
-        pending: false,
-      })
-      logout().then(() => {
-        expect(auth$.value).toStrictEqual({
-          pending: false,
-          error: undefined,
-          sessionToken: null,
-        })
-        done()
-      })
-    }, 200)
+    await logout()
+    expect(auth$.value).toStrictEqual({
+      pending: false,
+      error: undefined,
+      sessionToken: null,
+    })
   })
 
-  it('should not be able to create user with profile if user fail', () => {
-    create('failcreateuser', credentials.password)
+  it('should not be able to create user with profile if user fail', async () => {
+    const response = await create('failcreateuser', credentials.password)
 
-    expect(auth$.value).toStrictEqual({
+    expect(response).toStrictEqual({
+      isProfileUpdated: false,
       sessionToken: null,
-      error: undefined,
-      pending: true,
+      error: 'fail to create user.',
+      pending: false,
     })
-
-    setTimeout(() => {
-      expect(auth$.value).toStrictEqual({
-        sessionToken: null,
-        error: 'fail create user',
-        pending: false,
-      })
-    }, 200)
   })
 
   it("should skip double relogin relogin when it's pending", () => {

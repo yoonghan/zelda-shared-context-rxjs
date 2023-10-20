@@ -6,7 +6,7 @@ jest.mock('firebase/auth', () => ({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ) => {
     if (username === 'failcreateuser') {
-      throw new Error('fail create user')
+      throw new Error('fail to create user.')
     }
     return {
       uid: 'testUid',

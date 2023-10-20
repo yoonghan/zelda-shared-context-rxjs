@@ -14,10 +14,14 @@ import {
 } from 'firebase/auth'
 import { Firebase } from './Firebase'
 
-type AuthProps = {
+interface AuthProps {
   sessionToken: string | null
   error: string | undefined
   pending: boolean
+}
+
+interface AuthPropsWithProfile extends AuthProps {
+  isProfileUpdated: boolean
 }
 
 type ChangePasswordProps = {
@@ -37,20 +41,22 @@ export async function create(
   username: string,
   password: string,
   displayName?: string
-) {
+): Promise<AuthPropsWithProfile> {
   const loginResult = await loginOrCreate(
     createUserWithEmailAndPassword,
     username,
     password
   )
 
+  let isProfileUpdated = false
   if (!loginResult.error) {
     await updateProfile(Firebase.getAuth().currentUser, {
       displayName: displayName || username,
     })
+    isProfileUpdated = true
   }
 
-  return loginResult
+  return { ...loginResult, isProfileUpdated }
 }
 
 export async function login(username: string, password: string) {
