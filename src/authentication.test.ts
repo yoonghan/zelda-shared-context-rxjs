@@ -87,6 +87,24 @@ describe('authentication', () => {
     }, 200)
   })
 
+  it('should not be able to create user with profile if user fail', () => {
+    create('failcreateuser', credentials.password)
+
+    expect(auth$.value).toStrictEqual({
+      sessionToken: null,
+      error: undefined,
+      pending: true,
+    })
+
+    setTimeout(() => {
+      expect(auth$.value).toStrictEqual({
+        sessionToken: null,
+        error: 'fail create user',
+        pending: false,
+      })
+    }, 200)
+  })
+
   it("should skip double relogin relogin when it's pending", () => {
     login('invaliduser', 'invalidpassword')
     login('invaliduser', 'invalidpassword')
