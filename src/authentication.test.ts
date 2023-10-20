@@ -26,13 +26,14 @@ describe('authentication', () => {
         error: undefined,
         pending: false,
       })
-      logout()
-      expect(auth$.value).toStrictEqual({
-        pending: false,
-        error: undefined,
-        sessionToken: null,
+      logout().then(() => {
+        expect(auth$.value).toStrictEqual({
+          pending: false,
+          error: undefined,
+          sessionToken: null,
+        })
+        done()
       })
-      done()
     }, 200)
   })
 
@@ -49,13 +50,14 @@ describe('authentication', () => {
         error: 'Invalid user or password',
         pending: false,
       })
-      logout()
-      expect(auth$.value).toStrictEqual({
-        pending: false,
-        error: undefined,
-        sessionToken: null,
+      logout().then(() => {
+        expect(auth$.value).toStrictEqual({
+          pending: false,
+          error: undefined,
+          sessionToken: null,
+        })
+        done()
       })
-      done()
     }, 200)
   })
 
@@ -74,13 +76,14 @@ describe('authentication', () => {
         error: undefined,
         pending: false,
       })
-      logout()
-      expect(auth$.value).toStrictEqual({
-        pending: false,
-        error: undefined,
-        sessionToken: null,
+      logout().then(() => {
+        expect(auth$.value).toStrictEqual({
+          pending: false,
+          error: undefined,
+          sessionToken: null,
+        })
+        done()
       })
-      done()
     }, 200)
   })
 

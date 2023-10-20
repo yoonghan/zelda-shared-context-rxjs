@@ -172,8 +172,8 @@ async function loginOrCreate(
   }
 }
 
-export function logout() {
-  signOut(Firebase.getAuth())
+export async function logout() {
+  await signOut(Firebase.getAuth())
   localStorage.removeItem(SESSION_KEY)
   auth$.next({
     sessionToken: null,
