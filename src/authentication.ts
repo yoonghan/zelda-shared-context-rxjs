@@ -3,6 +3,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  confirmPasswordReset,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  updatePassword,
+  updateProfile,
   type UserCredential,
   type Auth,
 } from 'firebase/auth'
@@ -14,6 +20,11 @@ type AuthProps = {
   pending: boolean
 }
 
+type ChangePasswordProps = {
+  isChanged: boolean
+  error: string | undefined
+}
+
 export const SESSION_KEY = 'sessionToken'
 
 export const auth$ = new BehaviorSubject<AuthProps>({
@@ -22,12 +33,105 @@ export const auth$ = new BehaviorSubject<AuthProps>({
   pending: false,
 })
 
-export async function create(username: string, password: string) {
-  return await loginOrCreate(createUserWithEmailAndPassword, username, password)
+export async function create(
+  username: string,
+  password: string,
+  displayName?: string
+) {
+  const loginResult = await loginOrCreate(
+    createUserWithEmailAndPassword,
+    username,
+    password
+  )
+
+  if (!loginResult.error) {
+    await updateProfile(Firebase.getAuth().currentUser, {
+      displayName: displayName || username,
+    })
+  }
+
+  return loginResult
 }
 
 export async function login(username: string, password: string) {
   return await loginOrCreate(signInWithEmailAndPassword, username, password)
+}
+
+export async function confirmPasswordResetEmail(
+  code: string,
+  newPassword: string
+): Promise<ChangePasswordProps> {
+  try {
+    await confirmPasswordReset(Firebase.getAuth(), code, newPassword)
+
+    return {
+      isChanged: true,
+      error: undefined,
+    }
+  } catch (error) {
+    return {
+      isChanged: false,
+      error: error.message,
+    }
+  }
+}
+
+export async function resetEmail(
+  username: string,
+  redirectUrl: string
+): Promise<ChangePasswordProps> {
+  try {
+    await sendPasswordResetEmail(Firebase.getAuth(), username, {
+      url: redirectUrl,
+    })
+
+    return {
+      isChanged: true,
+      error: undefined,
+    }
+  } catch (error) {
+    return {
+      isChanged: false,
+      error: error.message,
+    }
+  }
+}
+
+export async function changePassword(
+  oldPassword: string,
+  newPassword: string
+): Promise<ChangePasswordProps> {
+  const currentUser = Firebase.getAuth().currentUser
+
+  if (currentUser === null) {
+    return {
+      isChanged: false,
+      error: 'User is not logged in.',
+    }
+  }
+  try {
+    const userCredential = await reauthenticateWithCredential(
+      currentUser,
+      EmailAuthProvider.credential(currentUser.email, oldPassword)
+    )
+    const result = {
+      sessionToken: await userCredential.user.getIdToken(false),
+      error: undefined,
+      pending: false,
+    }
+    auth$.next(result)
+    localStorage.setItem(SESSION_KEY, result.sessionToken)
+    updatePassword(currentUser, newPassword)
+    return {
+      isChanged: true,
+      error: undefined,
+    }
+  } catch (error) {
+    return {
+      isChanged: false,
+      error: error.message,
+    }
+  }
 }
 
 async function loginOrCreate(

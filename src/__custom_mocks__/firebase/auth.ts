@@ -42,7 +42,10 @@ jest.mock('firebase/auth', () => ({
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   signOut: async (_auth: unknown) => {
-    //auth()
+    return 'ok'
   },
-  getAuth: () => {},
+  getAuth: () => ({
+    currentUser: 'han',
+  }),
+  updateProfile: () => {},
 }))
