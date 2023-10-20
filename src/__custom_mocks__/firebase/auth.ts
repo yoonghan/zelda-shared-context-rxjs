@@ -49,4 +49,14 @@ jest.mock('firebase/auth', () => ({
     currentUser: 'han',
   }),
   updateProfile: () => {},
+  sendPasswordResetEmail: async (_auth: unknown, username: string) => {
+    if (username === 'invalidUser') {
+      throw Error('unable to reset.')
+    }
+  },
+  confirmPasswordReset: async (_auth: unknown, code: string) => {
+    if (code === 'invalidCode') {
+      throw Error('unable to change password.')
+    }
+  },
 }))

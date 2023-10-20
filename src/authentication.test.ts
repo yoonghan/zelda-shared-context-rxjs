@@ -1,6 +1,13 @@
 import './__custom_mocks__/firebase/auth'
 import { credentials } from './__custom_mocks__/const'
-import { auth$, create, login, logout } from './authentication'
+import {
+  auth$,
+  confirmPasswordResetEmail,
+  create,
+  login,
+  logout,
+  resetEmail,
+} from './authentication'
 
 describe('authentication', () => {
   it('should have default auth$ can subscribe and unsubscribe', async () => {
@@ -99,6 +106,45 @@ describe('authentication', () => {
         sessionToken: null,
         error: 'fail to create user.',
         pending: false,
+      })
+    })
+  })
+
+  describe('resetEmail', () => {
+    it('should successfully send email for reset', async () => {
+      const response = await resetEmail('email', 'password')
+      expect(response).toStrictEqual({
+        isChanged: true,
+        error: undefined,
+      })
+    })
+
+    it('should fail to send email for reset', async () => {
+      const response = await resetEmail('invalidUser', 'password')
+      expect(response).toStrictEqual({
+        isChanged: false,
+        error: 'unable to reset.',
+      })
+    })
+  })
+
+  describe('confirmPasswordResetEmail', () => {
+    it('should successfully confirm reset', async () => {
+      const response = await confirmPasswordResetEmail('code', 'password')
+      expect(response).toStrictEqual({
+        isChanged: true,
+        error: undefined,
+      })
+    })
+
+    it('should fail to reset', async () => {
+      const response = await confirmPasswordResetEmail(
+        'invalidCode',
+        'password'
+      )
+      expect(response).toStrictEqual({
+        isChanged: false,
+        error: 'unable to change password.',
       })
     })
   })
