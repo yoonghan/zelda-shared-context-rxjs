@@ -2,12 +2,14 @@ import './__custom_mocks__/firebase/auth'
 import { credentials } from './__custom_mocks__/const'
 import {
   auth$,
+  changePassword,
   confirmPasswordResetEmail,
   create,
   login,
   logout,
   resetEmail,
 } from './authentication'
+import { mockAuth } from './__custom_mocks__/firebase/auth'
 
 describe('authentication', () => {
   it('should have default auth$ can subscribe and unsubscribe', async () => {
@@ -146,6 +148,34 @@ describe('authentication', () => {
         isChanged: false,
         error: 'unable to change password.',
       })
+    })
+  })
+
+  describe('changePassword', () => {
+    it('should successfully change password', async () => {
+      const response = await changePassword('old', 'new')
+      expect(response).toStrictEqual({
+        isChanged: true,
+        error: undefined,
+      })
+    })
+
+    it('should fail to change password', async () => {
+      const response = await changePassword('failPassword', 'new')
+      expect(response).toStrictEqual({
+        isChanged: false,
+        error: 'invalid password.',
+      })
+    })
+
+    it('should fail when current user is not logged in', async () => {
+      mockAuth.mockReturnValue({ currentUser: null })
+      const response = await changePassword('old', 'new')
+      expect(response).toStrictEqual({
+        isChanged: false,
+        error: 'User is not logged in.',
+      })
+      mockAuth.mockReturnValue({ currentUser: 'han' })
     })
   })
 })

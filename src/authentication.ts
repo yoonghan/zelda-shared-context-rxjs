@@ -108,7 +108,6 @@ export async function changePassword(
   newPassword: string
 ): Promise<ChangePasswordProps> {
   const currentUser = Firebase.getAuth().currentUser
-
   if (currentUser === null) {
     return {
       isChanged: false,
@@ -127,7 +126,7 @@ export async function changePassword(
     }
     auth$.next(result)
     localStorage.setItem(SESSION_KEY, result.sessionToken)
-    updatePassword(currentUser, newPassword)
+    await updatePassword(currentUser, newPassword)
     return {
       isChanged: true,
       error: undefined,
