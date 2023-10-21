@@ -116,7 +116,7 @@ describe('authentication', () => {
     it('should successfully send email for reset', async () => {
       const response = await resetEmail('email', 'password')
       expect(response).toStrictEqual({
-        isChanged: true,
+        isSent: true,
         error: undefined,
       })
     })
@@ -124,7 +124,7 @@ describe('authentication', () => {
     it('should fail to send email for reset', async () => {
       const response = await resetEmail('invalidUser', 'password')
       expect(response).toStrictEqual({
-        isChanged: false,
+        isSent: false,
         error: 'unable to reset.',
       })
     })
