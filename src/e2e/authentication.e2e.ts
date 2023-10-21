@@ -26,6 +26,7 @@ describe('authenticate', () => {
     const result = await create('e2e_create', 'abc123')
     expect(result).toStrictEqual({
       pending: false,
+      isProfileUpdated: false,
       error: 'Firebase: Error (auth/invalid-email).',
       sessionToken: null,
     })
