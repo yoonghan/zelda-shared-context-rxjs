@@ -13,25 +13,12 @@ import {
   type Auth,
 } from 'firebase/auth'
 import { Firebase } from './Firebase'
-
-interface AuthProps {
-  sessionToken: string | null
-  error: string | undefined
-  pending: boolean
-}
-
-interface AuthPropsWithProfile extends AuthProps {
-  isProfileUpdated: boolean
-}
-
-type ChangePasswordProps = {
-  isChanged: boolean
-  error: string | undefined
-}
+import { AuthResponse, AuthWithProfileResponse } from './type/Auth'
+import { ChangePasswordResponse } from './type/ChangePassword'
 
 export const SESSION_KEY = 'sessionToken'
 
-export const auth$ = new BehaviorSubject<AuthProps>({
+export const auth$ = new BehaviorSubject<AuthResponse>({
   sessionToken: localStorage.getItem(SESSION_KEY),
   error: undefined,
   pending: false,
@@ -41,7 +28,7 @@ export async function create(
   username: string,
   password: string,
   displayName?: string
-): Promise<AuthPropsWithProfile> {
+): Promise<AuthWithProfileResponse> {
   const loginResult = await loginOrCreate(
     createUserWithEmailAndPassword,
     username,
@@ -66,7 +53,7 @@ export async function login(username: string, password: string) {
 export async function confirmPasswordResetEmail(
   code: string,
   newPassword: string
-): Promise<ChangePasswordProps> {
+): Promise<ChangePasswordResponse> {
   try {
     await confirmPasswordReset(Firebase.getAuth(), code, newPassword)
 
@@ -85,7 +72,7 @@ export async function confirmPasswordResetEmail(
 export async function resetEmail(
   username: string,
   redirectUrl: string
-): Promise<ChangePasswordProps> {
+): Promise<ChangePasswordResponse> {
   try {
     await sendPasswordResetEmail(Firebase.getAuth(), username, {
       url: redirectUrl,
@@ -106,7 +93,7 @@ export async function resetEmail(
 export async function changePassword(
   oldPassword: string,
   newPassword: string
-): Promise<ChangePasswordProps> {
+): Promise<ChangePasswordResponse> {
   const currentUser = Firebase.getAuth().currentUser
   if (currentUser === null) {
     return {
@@ -143,7 +130,7 @@ async function loginOrCreate(
   fn: (auth: Auth, email: string, password: string) => Promise<UserCredential>,
   username: string,
   password: string
-): Promise<AuthProps> {
+): Promise<AuthResponse> {
   if (!auth$.value.pending) {
     let result = {
       sessionToken: null,
