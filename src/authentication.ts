@@ -14,7 +14,10 @@ import {
 } from 'firebase/auth'
 import { Firebase } from './Firebase'
 import { AuthResponse, AuthWithProfileResponse } from './type/Auth'
-import { ChangePasswordResponse } from './type/ChangePassword'
+import {
+  ChangePasswordResponse,
+  EmailPasswordResetResponse,
+} from './type/ChangePassword'
 
 export const SESSION_KEY = 'sessionToken'
 
@@ -72,19 +75,19 @@ export async function confirmPasswordResetEmail(
 export async function resetEmail(
   username: string,
   redirectUrl: string
-): Promise<ChangePasswordResponse> {
+): Promise<EmailPasswordResetResponse> {
   try {
     await sendPasswordResetEmail(Firebase.getAuth(), username, {
       url: redirectUrl,
     })
 
     return {
-      isChanged: true,
+      isSent: true,
       error: undefined,
     }
   } catch (error) {
     return {
-      isChanged: false,
+      isSent: false,
       error: error.message,
     }
   }

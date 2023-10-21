@@ -43,7 +43,7 @@ describe('authenticate', () => {
   it('should be able to resetEmail password', async () => {
     const result = await resetEmail('bob', 'https://resetme.com')
     expect(result).toStrictEqual({
-      isChanged: false,
+      isSent: false,
       error: 'Firebase: Error (auth/invalid-email).',
     })
   })
