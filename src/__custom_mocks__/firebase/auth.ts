@@ -1,3 +1,8 @@
+export const mockAuth = jest.fn()
+mockAuth.mockReturnValue({
+  currentUser: 'han',
+})
+
 jest.mock('firebase/auth', () => ({
   ...jest.mock('firebase/auth'),
   createUserWithEmailAndPassword: async (
@@ -5,6 +10,9 @@ jest.mock('firebase/auth', () => ({
     username: string
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ) => {
+    if (username === 'failcreateuser') {
+      throw new Error('fail to create user.')
+    }
     return {
       uid: 'testUid',
       username,
@@ -41,8 +49,37 @@ jest.mock('firebase/auth', () => ({
     }
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  signOut: async (_auth: unknown) => {
-    //auth()
+  signOut: async (_auth: unknown) => {},
+  getAuth: mockAuth,
+  updateProfile: () => {},
+  sendPasswordResetEmail: async (_auth: unknown, username: string) => {
+    if (username === 'invalidUser') {
+      throw Error('unable to reset.')
+    }
   },
-  getAuth: () => {},
+  confirmPasswordReset: async (_auth: unknown, code: string) => {
+    if (code === 'invalidCode') {
+      throw Error('unable to change password.')
+    }
+  },
+  EmailAuthProvider: {
+    credential: (_username: string, password) => {
+      if (password === 'failPassword') {
+        throw new Error('invalid password.')
+      }
+    },
+  },
+  reauthenticateWithCredential: async () => {
+    return {
+      uid: 'testUid',
+      username: 'testUser',
+      user: {
+        getIdToken: () =>
+          new Promise((resolve) => {
+            resolve('testToken')
+          }),
+      },
+    }
+  },
+  updatePassword: async () => {},
 }))
