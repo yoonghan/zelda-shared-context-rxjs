@@ -1,6 +1,9 @@
 export const mockAuth = jest.fn()
 mockAuth.mockReturnValue({
   currentUser: 'han',
+  onAuthStateChanged: (func) => {
+    func()
+  },
 })
 
 jest.mock('firebase/auth', () => ({
