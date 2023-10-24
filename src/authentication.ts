@@ -178,7 +178,7 @@ export async function logout() {
 }
 
 function init() {
-  Firebase.getAuth().onAuthStateChanged(async (user) => {
+  Firebase.getAuth().onAuthStateChanged((user) => {
     /* istanbul ignore next -- @preserve */
     if (!user) {
       localStorage.removeItem(SESSION_KEY)
@@ -186,6 +186,16 @@ function init() {
         sessionToken: null,
         error: undefined,
         pending: false,
+      })
+    } else {
+      user.getIdToken(false).then((idToken) => {
+        const result = {
+          sessionToken: idToken,
+          error: undefined,
+          pending: false,
+        }
+        localStorage.setItem(SESSION_KEY, idToken)
+        auth$.next(result)
       })
     }
   })
