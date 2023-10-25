@@ -21,6 +21,17 @@ import {
 
 export const SESSION_KEY = 'sessionToken'
 
+const updateToken = (idToken: string) => {
+  const result = {
+    sessionToken: idToken,
+    error: undefined,
+    pending: false,
+  }
+  localStorage.setItem(SESSION_KEY, idToken)
+  auth$.next(result)
+  return result
+}
+
 export const auth$ = new BehaviorSubject<AuthResponse>({
   sessionToken: localStorage.getItem(SESSION_KEY),
   error: undefined,
@@ -109,13 +120,7 @@ export async function changePassword(
       currentUser,
       EmailAuthProvider.credential(currentUser.email, oldPassword)
     )
-    const result = {
-      sessionToken: await userCredential.user.getIdToken(false),
-      error: undefined,
-      pending: false,
-    }
-    auth$.next(result)
-    localStorage.setItem(SESSION_KEY, result.sessionToken)
+    updateToken(await userCredential.user.getIdToken(false))
     await updatePassword(currentUser, newPassword)
     return {
       isChanged: true,
@@ -135,35 +140,24 @@ async function loginOrCreate(
   password: string
 ): Promise<AuthResponse> {
   if (!auth$.value.pending) {
-    let result = {
+    auth$.next({
       sessionToken: null,
       error: undefined,
       pending: true,
-    }
-
-    auth$.next(result)
+    })
 
     try {
       const userCredential = await fn(Firebase.getAuth(), username, password)
-      const user = userCredential.user
-      const idToken = await user.getIdToken(false)
-
-      result = {
-        sessionToken: idToken,
-        error: undefined,
-        pending: false,
-      }
-      localStorage.setItem(SESSION_KEY, idToken)
+      return updateToken(await userCredential.user.getIdToken(false))
     } catch (error) {
-      result = {
+      const result = {
         sessionToken: null,
         error: error.message,
         pending: false,
       }
+      auth$.next(result)
+      return result
     }
-
-    auth$.next(result)
-    return result
   }
 }
 
@@ -177,27 +171,22 @@ export async function logout() {
   })
 }
 
+export const updateUserLogin = (user) => {
+  if (!user) {
+    localStorage.removeItem(SESSION_KEY)
+    auth$.next({
+      sessionToken: null,
+      error: undefined,
+      pending: false,
+    })
+  } else {
+    user.getIdToken(false).then((idToken) => {
+      updateToken(idToken)
+    })
+  }
+}
+
 function init() {
-  Firebase.getAuth().onAuthStateChanged((user) => {
-    /* istanbul ignore next -- @preserve */
-    if (!user) {
-      localStorage.removeItem(SESSION_KEY)
-      auth$.next({
-        sessionToken: null,
-        error: undefined,
-        pending: false,
-      })
-    } else {
-      user.getIdToken(false).then((idToken) => {
-        const result = {
-          sessionToken: idToken,
-          error: undefined,
-          pending: false,
-        }
-        localStorage.setItem(SESSION_KEY, idToken)
-        auth$.next(result)
-      })
-    }
-  })
+  Firebase.getAuth().onAuthStateChanged(updateUserLogin)
 }
 init()
