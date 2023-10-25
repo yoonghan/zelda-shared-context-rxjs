@@ -163,12 +163,7 @@ async function loginOrCreate(
 
 export async function logout() {
   await signOut(Firebase.getAuth())
-  localStorage.removeItem(SESSION_KEY)
-  auth$.next({
-    sessionToken: null,
-    error: undefined,
-    pending: false,
-  })
+  updateUserLogin(undefined)
 }
 
 export const updateUserLogin = (user) => {
