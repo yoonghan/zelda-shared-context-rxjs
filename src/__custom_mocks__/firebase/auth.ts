@@ -1,3 +1,14 @@
+export const mockedUser = {
+  uid: 'testUid',
+  username: 'test user',
+  user: {
+    getIdToken: () =>
+      new Promise((resolve) => {
+        resolve('testToken')
+      }),
+  },
+}
+
 export const mockAuth = jest.fn()
 mockAuth.mockReturnValue({
   currentUser: 'han',
@@ -17,14 +28,8 @@ jest.mock('firebase/auth', () => ({
       throw new Error('fail to create user.')
     }
     return {
-      uid: 'testUid',
+      ...mockedUser,
       username,
-      user: {
-        getIdToken: () =>
-          new Promise((resolve) => {
-            resolve('testToken')
-          }),
-      },
     }
   },
   signInWithEmailAndPassword: async (
@@ -37,16 +42,7 @@ jest.mock('firebase/auth', () => ({
       username === 'walcoorperation@gmail.com' &&
       password === 'samplePassword'
     ) {
-      return {
-        uid: 'testUid',
-        username,
-        user: {
-          getIdToken: () =>
-            new Promise((resolve) => {
-              resolve('testToken')
-            }),
-        },
-      }
+      return { ...mockedUser, username }
     } else {
       throw Error('Invalid user or password')
     }

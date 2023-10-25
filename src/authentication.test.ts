@@ -8,8 +8,9 @@ import {
   login,
   logout,
   resetEmail,
+  updateUserLogin,
 } from './authentication'
-import { mockAuth } from './__custom_mocks__/firebase/auth'
+import { mockAuth, mockedUser } from './__custom_mocks__/firebase/auth'
 
 describe('authentication', () => {
   it('should have default auth$ can subscribe and unsubscribe', async () => {
@@ -29,6 +30,8 @@ describe('authentication', () => {
         error: undefined,
         pending: true,
       })
+
+      updateUserLogin(mockedUser.user)
 
       setTimeout(() => {
         expect(auth$.value).toStrictEqual({
@@ -54,6 +57,7 @@ describe('authentication', () => {
         error: undefined,
         pending: true,
       })
+
       setTimeout(() => {
         expect(auth$.value).toStrictEqual({
           sessionToken: null,
@@ -61,6 +65,7 @@ describe('authentication', () => {
           pending: false,
         })
         logout().then(() => {
+          updateUserLogin(null)
           expect(auth$.value).toStrictEqual({
             pending: false,
             error: undefined,
@@ -92,7 +97,11 @@ describe('authentication', () => {
         error: undefined,
         pending: false,
       })
+
+      updateUserLogin(mockedUser.user)
+
       await logout()
+      updateUserLogin(null)
       expect(auth$.value).toStrictEqual({
         pending: false,
         error: undefined,
@@ -176,6 +185,32 @@ describe('authentication', () => {
         error: 'User is not logged in.',
       })
       mockAuth.mockReturnValue({ currentUser: 'han' })
+    })
+  })
+
+  describe('updateUserLogin', () => {
+    it('should return user as logged in if user is valid', (done) => {
+      updateUserLogin(mockedUser.user)
+      setTimeout(() => {
+        expect(auth$.value).toStrictEqual({
+          sessionToken: 'testToken',
+          error: undefined,
+          pending: false,
+        })
+        done()
+      }, 200)
+    })
+
+    it('should return logged out after user is logged in', (done) => {
+      updateUserLogin(null)
+      setTimeout(() => {
+        expect(auth$.value).toStrictEqual({
+          sessionToken: null,
+          error: undefined,
+          pending: false,
+        })
+        done()
+      }, 200)
     })
   })
 })
