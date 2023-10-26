@@ -4,6 +4,7 @@ import {
   create,
   login,
   logout,
+  removeUser,
   resetEmail,
 } from '../authentication'
 import 'whatwg-fetch'
@@ -53,6 +54,57 @@ describe('authenticate', () => {
     expect(result).toStrictEqual({
       isChanged: false,
       error: 'Firebase: Error (auth/invalid-action-code).',
+    })
+  })
+
+  it('should be able to removeUser', async () => {
+    const result = await removeUser()
+    expect(result).toStrictEqual({
+      isRemoved: false,
+      error: "Cannot read properties of null (reading 'delete')",
+    })
+  })
+
+  describe('full cycle test', () => {
+    const username = 'walcoorperation.1@gmail.com'
+    const oldPassword = 'abc123'
+    const newPassword = 'def123'
+
+    it('should be able to create user', async () => {
+      const result = await create(username, oldPassword)
+      expect(result.error).toBeUndefined()
+      expect(result.isProfileUpdated).toBeTruthy()
+    })
+
+    it('should be able to change password after create', async () => {
+      const result = await changePassword(oldPassword, newPassword)
+      expect(result.error).toBeUndefined()
+      expect(result.isChanged).toBeTruthy()
+    })
+
+    it('should be able to logout', async () => {
+      await logout()
+    })
+
+    it('should be able to send reset email', async () => {
+      const result = await resetEmail(username, 'https://zelda.walcron.com')
+      expect(result.isSent).toBeTruthy()
+    })
+
+    xit('should be able to confirm email', async () => {
+      //confirmPasswordResetEmail('bob')
+    })
+
+    it('should be able to login', async () => {
+      const result = await login(username, newPassword)
+      expect(result.error).toBeUndefined()
+      expect(result.sessionToken).toBeDefined()
+    })
+
+    it('should be able to remove user after login', async () => {
+      const result = await removeUser()
+      expect(result.error).toBeUndefined()
+      expect(result.isRemoved).toBeTruthy()
     })
   })
 })

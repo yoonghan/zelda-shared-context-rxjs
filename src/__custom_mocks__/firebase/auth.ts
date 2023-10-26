@@ -9,13 +9,21 @@ export const mockedUser = {
   },
 }
 
-export const mockAuth = jest.fn()
-mockAuth.mockReturnValue({
-  currentUser: 'han',
-  onAuthStateChanged: (func) => {
-    func()
-  },
-})
+const mockAuth = jest.fn()
+export const restoreMockAuth = () => {
+  mockAuth.mockReturnValue({
+    currentUser: 'han',
+    onAuthStateChanged: (func) => {
+      func()
+    },
+  })
+}
+export const nullMockAuth = () => {
+  mockAuth.mockReturnValue({
+    currentUser: null,
+  })
+}
+restoreMockAuth()
 
 jest.mock('firebase/auth', () => ({
   ...jest.mock('firebase/auth'),
@@ -81,4 +89,11 @@ jest.mock('firebase/auth', () => ({
     }
   },
   updatePassword: async () => {},
+  deleteUser: async (user: unknown) => {
+    if (!user) {
+      throw new Error('Firebase - Cannot remove user')
+    } else {
+      return {}
+    }
+  },
 }))
