@@ -76,13 +76,7 @@ describe('authenticate', () => {
       expect(result.isProfileUpdated).toBeTruthy()
     })
 
-    it('should be able to login', async () => {
-      const result = await login(username, oldPassword)
-      expect(result.error).toBeUndefined()
-      expect(result.sessionToken).toBeDefined()
-    })
-
-    it('should be able to change password', async () => {
+    it('should be able to change password after create', async () => {
       const result = await changePassword(oldPassword, newPassword)
       expect(result.error).toBeUndefined()
       expect(result.isChanged).toBeTruthy()
@@ -101,8 +95,13 @@ describe('authenticate', () => {
       //confirmPasswordResetEmail('bob')
     })
 
-    it('should be able to login and remove user', async () => {
-      await login(username, newPassword)
+    it('should be able to login', async () => {
+      const result = await login(username, newPassword)
+      expect(result.error).toBeUndefined()
+      expect(result.sessionToken).toBeDefined()
+    })
+
+    it('should be able to remove user after login', async () => {
       const result = await removeUser()
       expect(result.error).toBeUndefined()
       expect(result.isRemoved).toBeTruthy()
