@@ -12,8 +12,8 @@ import {
   updateUserLogin,
 } from './authentication'
 import {
-  mockAuth,
   mockedUser,
+  nullMockAuth,
   restoreMockAuth,
 } from './__custom_mocks__/firebase/auth'
 
@@ -183,7 +183,7 @@ describe('authentication', () => {
     })
 
     it('should fail when current user is not logged in', async () => {
-      mockAuth.mockReturnValue({ currentUser: null })
+      nullMockAuth()
       const response = await changePassword('old', 'new')
       expect(response).toStrictEqual({
         isChanged: false,
@@ -221,7 +221,6 @@ describe('authentication', () => {
 
   describe('removeUser', () => {
     it('should remove user successfully', async () => {
-      restoreMockAuth()
       expect(await removeUser()).toStrictEqual({
         isRemoved: true,
         error: undefined,
@@ -229,9 +228,7 @@ describe('authentication', () => {
     })
 
     it('should handle if user cannot be removed', async () => {
-      mockAuth.mockReturnValue({
-        currentUser: null,
-      })
+      nullMockAuth()
       expect(await removeUser()).toStrictEqual({
         isRemoved: false,
         error: 'Firebase - Cannot remove user',

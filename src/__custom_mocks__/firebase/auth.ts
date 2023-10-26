@@ -9,13 +9,18 @@ export const mockedUser = {
   },
 }
 
-export const mockAuth = jest.fn()
+const mockAuth = jest.fn()
 export const restoreMockAuth = () => {
   mockAuth.mockReturnValue({
     currentUser: 'han',
     onAuthStateChanged: (func) => {
       func()
     },
+  })
+}
+export const nullMockAuth = () => {
+  mockAuth.mockReturnValue({
+    currentUser: null,
   })
 }
 restoreMockAuth()
