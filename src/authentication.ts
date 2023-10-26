@@ -9,6 +9,7 @@ import {
   EmailAuthProvider,
   updatePassword,
   updateProfile,
+  deleteUser,
   type UserCredential,
   type Auth,
 } from 'firebase/auth'
@@ -18,6 +19,7 @@ import {
   ChangePasswordResponse,
   EmailPasswordResetResponse,
 } from './type/ChangePassword'
+import { RemoveUser } from './type/RemoveUser'
 
 export const SESSION_KEY = 'sessionToken'
 
@@ -178,6 +180,21 @@ export const updateUserLogin = (user) => {
     user.getIdToken(false).then((idToken) => {
       updateToken(idToken)
     })
+  }
+}
+
+export async function removeUser(): Promise<RemoveUser> {
+  try {
+    await deleteUser(Firebase.getAuth().currentUser)
+    return {
+      isRemoved: true,
+      error: undefined,
+    }
+  } catch (error) {
+    return {
+      isRemoved: false,
+      error: error.message,
+    }
   }
 }
 

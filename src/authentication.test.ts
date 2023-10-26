@@ -7,10 +7,15 @@ import {
   create,
   login,
   logout,
+  removeUser,
   resetEmail,
   updateUserLogin,
 } from './authentication'
-import { mockAuth, mockedUser } from './__custom_mocks__/firebase/auth'
+import {
+  mockAuth,
+  mockedUser,
+  restoreMockAuth,
+} from './__custom_mocks__/firebase/auth'
 
 describe('authentication', () => {
   it('should have default auth$ can subscribe and unsubscribe', async () => {
@@ -184,7 +189,7 @@ describe('authentication', () => {
         isChanged: false,
         error: 'User is not logged in.',
       })
-      mockAuth.mockReturnValue({ currentUser: 'han' })
+      restoreMockAuth()
     })
   })
 
@@ -211,6 +216,26 @@ describe('authentication', () => {
         })
         done()
       }, 200)
+    })
+  })
+
+  describe('removeUser', () => {
+    it('should remove user successfully', async () => {
+      restoreMockAuth()
+      expect(await removeUser()).toStrictEqual({
+        isRemoved: true,
+        error: undefined,
+      })
+    })
+
+    it('should handle if user cannot be removed', async () => {
+      mockAuth.mockReturnValue({
+        currentUser: null,
+      })
+      expect(await removeUser()).toStrictEqual({
+        isRemoved: false,
+        error: 'Firebase - Cannot remove user',
+      })
     })
   })
 })
