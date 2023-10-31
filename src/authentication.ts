@@ -51,19 +51,17 @@ export async function create(
     password
   )
 
-  let isProfileUpdated = false
   if (!createResult.error) {
+    const loginResult = await login(username, password)
+
     await updateProfile(Firebase.getAuth().currentUser, {
       displayName: displayName || username,
     })
-    isProfileUpdated = true
+
+    return { ...loginResult, isProfileUpdated: true }
   }
 
-  if (isProfileUpdated) {
-    return { ...(await login(username, password)), isProfileUpdated }
-  }
-
-  return { ...createResult, isProfileUpdated }
+  return { ...createResult, isProfileUpdated: false }
 }
 
 export async function login(username: string, password: string) {
