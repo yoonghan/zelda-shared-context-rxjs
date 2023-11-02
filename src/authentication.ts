@@ -19,7 +19,8 @@ import {
   ChangePasswordResponse,
   EmailPasswordResetResponse,
 } from './type/ChangePassword'
-import { RemoveUser } from './type/RemoveUser'
+import type { RemoveUser } from './type/RemoveUser'
+import type { UpdateUserRequest, UpdateUserResponse } from './type/UpdateUser'
 
 export const SESSION_KEY = 'sessionToken'
 export const DISPLAYNAME_KEY = 'sessionToken'
@@ -213,6 +214,25 @@ export async function removeUser(): Promise<RemoveUser> {
   } catch (error) {
     return {
       isRemoved: false,
+      error: error.message,
+    }
+  }
+}
+
+export async function updateUser(
+  updateUserRequest: UpdateUserRequest
+): Promise<UpdateUserResponse> {
+  try {
+    await updateProfile(Firebase.getAuth().currentUser, {
+      displayName: updateUserRequest.displayName,
+    })
+    return {
+      isProfileUpdated: true,
+      error: undefined,
+    }
+  } catch (error) {
+    return {
+      isProfileUpdated: false,
       error: error.message,
     }
   }

@@ -9,6 +9,7 @@ import {
   logout,
   removeUser,
   resetEmail,
+  updateUser,
   updateUserLogin,
 } from './authentication'
 import {
@@ -244,7 +245,26 @@ describe('authentication', () => {
       nullMockAuth()
       expect(await removeUser()).toStrictEqual({
         isRemoved: false,
-        error: 'Firebase - Cannot remove user',
+        error: 'Firebase - Cannot remove user.',
+      })
+    })
+  })
+
+  describe('updateUser', () => {
+    it('should be able to update user', async () => {
+      expect(
+        await updateUser({ displayName: 'micheal jackson' })
+      ).toStrictEqual({
+        isProfileUpdated: true,
+        error: undefined,
+      })
+    })
+
+    it('should handle if user cannot be updated', async () => {
+      nullMockAuth()
+      expect(await updateUser({ displayName: 'invalidUser' })).toStrictEqual({
+        isProfileUpdated: false,
+        error: 'Firebase - Cannot update user.',
       })
     })
   })
