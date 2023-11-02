@@ -6,6 +6,7 @@ export const mockedUser = {
       new Promise((resolve) => {
         resolve('testToken')
       }),
+    displayName: 'Andy',
   },
 }
 

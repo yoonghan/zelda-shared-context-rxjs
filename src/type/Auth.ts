@@ -1,5 +1,6 @@
 export interface AuthResponse {
   sessionToken: string | null
+  displayName: string
   error: string | undefined
   pending: boolean
 }

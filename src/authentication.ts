@@ -22,20 +22,24 @@ import {
 import { RemoveUser } from './type/RemoveUser'
 
 export const SESSION_KEY = 'sessionToken'
+export const DISPLAYNAME_KEY = 'sessionToken'
 
-const updateToken = (idToken: string) => {
+const updateToken = (idToken: string, displayName: string) => {
   const result = {
     sessionToken: idToken,
+    displayName: displayName,
     error: undefined,
     pending: false,
   }
   localStorage.setItem(SESSION_KEY, idToken)
+  localStorage.setItem(DISPLAYNAME_KEY, displayName)
   auth$.next(result)
   return result
 }
 
 export const auth$ = new BehaviorSubject<AuthResponse>({
   sessionToken: localStorage.getItem(SESSION_KEY),
+  displayName: localStorage.getItem(DISPLAYNAME_KEY),
   error: undefined,
   pending: false,
 })
@@ -45,6 +49,7 @@ export async function create(
   password: string,
   displayName?: string
 ): Promise<AuthWithProfileResponse> {
+  const definedDisplayName = displayName || username
   const createResult = await loginOrCreate(
     createUserWithEmailAndPassword,
     username,
@@ -55,10 +60,14 @@ export async function create(
     const loginResult = await login(username, password)
 
     await updateProfile(Firebase.getAuth().currentUser, {
-      displayName: displayName || username,
+      displayName: definedDisplayName,
     })
 
-    return { ...loginResult, isProfileUpdated: true }
+    return {
+      ...loginResult,
+      displayName: definedDisplayName,
+      isProfileUpdated: true,
+    }
   }
 
   return { ...createResult, isProfileUpdated: false }
@@ -124,7 +133,10 @@ export async function changePassword(
       currentUser,
       EmailAuthProvider.credential(currentUser.email, oldPassword)
     )
-    updateToken(await userCredential.user.getIdToken(false))
+    updateToken(
+      await userCredential.user.getIdToken(false),
+      userCredential.user.displayName
+    )
     await updatePassword(currentUser, newPassword)
     return {
       isChanged: true,
@@ -146,16 +158,21 @@ async function loginOrCreate(
   if (!auth$.value.pending) {
     auth$.next({
       sessionToken: null,
+      displayName: null,
       error: undefined,
       pending: true,
     })
 
     try {
       const userCredential = await fn(Firebase.getAuth(), username, password)
-      return updateToken(await userCredential.user.getIdToken(false))
+      return updateToken(
+        await userCredential.user.getIdToken(false),
+        userCredential.user.displayName
+      )
     } catch (error) {
       const result = {
         sessionToken: null,
+        displayName: null,
         error: error.message,
         pending: false,
       }
@@ -175,12 +192,13 @@ export const updateUserLogin = (user) => {
     localStorage.removeItem(SESSION_KEY)
     auth$.next({
       sessionToken: null,
+      displayName: null,
       error: undefined,
       pending: false,
     })
   } else {
     user.getIdToken(false).then((idToken) => {
-      updateToken(idToken)
+      updateToken(idToken, user.displayName)
     })
   }
 }

@@ -20,6 +20,7 @@ import {
 describe('authentication', () => {
   it('should have default auth$ can subscribe and unsubscribe', async () => {
     expect(auth$.value).toStrictEqual({
+      displayName: null,
       pending: false,
       error: undefined,
       sessionToken: null,
@@ -31,6 +32,7 @@ describe('authentication', () => {
       login(credentials.username, credentials.password)
 
       expect(auth$.value).toStrictEqual({
+        displayName: null,
         sessionToken: null,
         error: undefined,
         pending: true,
@@ -40,12 +42,14 @@ describe('authentication', () => {
 
       setTimeout(() => {
         expect(auth$.value).toStrictEqual({
+          displayName: 'Andy',
           sessionToken: 'testToken',
           error: undefined,
           pending: false,
         })
         logout().then(() => {
           expect(auth$.value).toStrictEqual({
+            displayName: null,
             pending: false,
             error: undefined,
             sessionToken: null,
@@ -58,6 +62,7 @@ describe('authentication', () => {
     it('should be able fail to login, and still triggers logout', (done) => {
       login('invaliduser', 'invalidpassword')
       expect(auth$.value).toStrictEqual({
+        displayName: null,
         sessionToken: null,
         error: undefined,
         pending: true,
@@ -65,6 +70,7 @@ describe('authentication', () => {
 
       setTimeout(() => {
         expect(auth$.value).toStrictEqual({
+          displayName: null,
           sessionToken: null,
           error: 'Invalid user or password',
           pending: false,
@@ -72,6 +78,7 @@ describe('authentication', () => {
         logout().then(() => {
           updateUserLogin(null)
           expect(auth$.value).toStrictEqual({
+            displayName: null,
             pending: false,
             error: undefined,
             sessionToken: null,
@@ -85,6 +92,7 @@ describe('authentication', () => {
       login('invaliduser', 'invalidpassword')
       login('invaliduser', 'invalidpassword')
       expect(auth$.value).toStrictEqual({
+        displayName: null,
         sessionToken: null,
         error: undefined,
         pending: true,
@@ -97,6 +105,7 @@ describe('authentication', () => {
       const response = await create(credentials.username, credentials.password)
 
       expect(response).toStrictEqual({
+        displayName: credentials.username,
         isProfileUpdated: true,
         sessionToken: 'testToken',
         error: undefined,
@@ -108,6 +117,7 @@ describe('authentication', () => {
       await logout()
       updateUserLogin(null)
       expect(auth$.value).toStrictEqual({
+        displayName: null,
         pending: false,
         error: undefined,
         sessionToken: null,
@@ -118,6 +128,7 @@ describe('authentication', () => {
       const response = await create('failcreateuser', credentials.password)
 
       expect(response).toStrictEqual({
+        displayName: null,
         isProfileUpdated: false,
         sessionToken: null,
         error: 'fail to create user.',
@@ -198,6 +209,7 @@ describe('authentication', () => {
       updateUserLogin(mockedUser.user)
       setTimeout(() => {
         expect(auth$.value).toStrictEqual({
+          displayName: 'Andy',
           sessionToken: 'testToken',
           error: undefined,
           pending: false,
@@ -210,6 +222,7 @@ describe('authentication', () => {
       updateUserLogin(null)
       setTimeout(() => {
         expect(auth$.value).toStrictEqual({
+          displayName: null,
           sessionToken: null,
           error: undefined,
           pending: false,
