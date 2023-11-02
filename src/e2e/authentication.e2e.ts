@@ -20,6 +20,7 @@ describe('authenticate', () => {
       pending: false,
       error: 'Firebase: Error (auth/invalid-email).',
       sessionToken: null,
+      displayName: null,
     })
   })
 
@@ -30,6 +31,7 @@ describe('authenticate', () => {
       isProfileUpdated: false,
       error: 'Firebase: Error (auth/invalid-email).',
       sessionToken: null,
+      displayName: null,
     })
   })
 
@@ -69,11 +71,13 @@ describe('authenticate', () => {
     const username = 'walcoorperation.1@gmail.com'
     const oldPassword = 'abc123'
     const newPassword = 'def123'
+    const displayName = 'alice'
 
     it('should be able to create user', async () => {
-      const result = await create(username, oldPassword)
+      const result = await create(username, oldPassword, displayName)
       expect(result.error).toBeUndefined()
       expect(result.isProfileUpdated).toBeTruthy()
+      expect(result.displayName).toBe(displayName)
     })
 
     it('should be able to change password after create', async () => {
@@ -99,6 +103,7 @@ describe('authenticate', () => {
       const result = await login(username, newPassword)
       expect(result.error).toBeUndefined()
       expect(result.sessionToken).toBeDefined()
+      expect(result.displayName).toBe(displayName)
     })
 
     it('should be able to remove user after login', async () => {
