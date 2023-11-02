@@ -59,7 +59,11 @@ jest.mock('firebase/auth', () => ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   signOut: async (_auth: unknown) => {},
   getAuth: mockAuth,
-  updateProfile: () => {},
+  updateProfile: (_auth, profile: { displayName: string }) => {
+    if (profile.displayName === 'invalidUser') {
+      throw Error('Firebase - Cannot update user.')
+    }
+  },
   sendPasswordResetEmail: async (_auth: unknown, username: string) => {
     if (username === 'invalidUser') {
       throw Error('unable to reset.')
@@ -92,7 +96,7 @@ jest.mock('firebase/auth', () => ({
   updatePassword: async () => {},
   deleteUser: async (user: unknown) => {
     if (!user) {
-      throw new Error('Firebase - Cannot remove user')
+      throw new Error('Firebase - Cannot remove user.')
     } else {
       return {}
     }

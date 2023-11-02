@@ -6,6 +6,7 @@ import {
   logout,
   removeUser,
   resetEmail,
+  updateUser,
 } from '../authentication'
 import 'whatwg-fetch'
 
@@ -43,6 +44,14 @@ describe('authenticate', () => {
     })
   })
 
+  it('should be able to update user', async () => {
+    const result = await updateUser({ displayName: 'Micheal' })
+    expect(result).toStrictEqual({
+      isProfileUpdated: false,
+      error: "Cannot read properties of null (reading 'getIdToken')",
+    })
+  })
+
   it('should be able to resetEmail password', async () => {
     const result = await resetEmail('bob', 'https://resetme.com')
     expect(result).toStrictEqual({
@@ -71,19 +80,26 @@ describe('authenticate', () => {
     const username = 'walcoorperation.1@gmail.com'
     const oldPassword = 'abc123'
     const newPassword = 'def123'
-    const displayName = 'alice'
+    const oldDisplayName = 'alice'
+    const newDisplayName = 'gaia'
 
     it('should be able to create user', async () => {
-      const result = await create(username, oldPassword, displayName)
+      const result = await create(username, oldPassword, oldDisplayName)
       expect(result.error).toBeUndefined()
       expect(result.isProfileUpdated).toBeTruthy()
-      expect(result.displayName).toBe(displayName)
+      expect(result.displayName).toBe(oldDisplayName)
     })
 
     it('should be able to change password after create', async () => {
       const result = await changePassword(oldPassword, newPassword)
       expect(result.error).toBeUndefined()
       expect(result.isChanged).toBeTruthy()
+    })
+
+    it('should be able to change display name', async () => {
+      const result = await updateUser({ displayName: newDisplayName })
+      expect(result.error).toBeUndefined()
+      expect(result.isProfileUpdated).toBeTruthy()
     })
 
     it('should be able to logout', async () => {
@@ -103,7 +119,7 @@ describe('authenticate', () => {
       const result = await login(username, newPassword)
       expect(result.error).toBeUndefined()
       expect(result.sessionToken).toBeDefined()
-      expect(result.displayName).toBe(displayName)
+      expect(result.displayName).toBe(newDisplayName)
     })
 
     it('should be able to remove user after login', async () => {
