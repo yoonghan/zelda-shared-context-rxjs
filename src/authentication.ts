@@ -25,12 +25,17 @@ import type { UpdateUserRequest, UpdateUserResponse } from './type/UpdateUser'
 export const SESSION_KEY = 'sessionToken'
 export const DISPLAYNAME_KEY = 'sessionToken'
 
-const updateToken = (idToken: string, displayName: string) => {
+const updateToken = (
+  idToken: string,
+  displayName: string,
+  error: string = undefined,
+  pending = false
+) => {
   const result = {
     sessionToken: idToken,
     displayName: displayName,
-    error: undefined,
-    pending: false,
+    error: error,
+    pending: pending,
   }
   localStorage.setItem(SESSION_KEY, idToken)
   localStorage.setItem(DISPLAYNAME_KEY, displayName)
@@ -50,6 +55,23 @@ export async function create(
   password: string,
   displayName?: string
 ): Promise<AuthWithProfileResponse> {
+  if (auth$.value.pending) {
+    return {
+      sessionToken: null,
+      displayName: null,
+      error: undefined,
+      pending: false,
+      isProfileUpdated: false,
+    }
+  }
+
+  auth$.next({
+    sessionToken: null,
+    displayName: null,
+    error: undefined,
+    pending: true,
+  })
+
   const definedDisplayName = displayName || username
   const createResult = await loginOrCreate(
     createUserWithEmailAndPassword,
@@ -58,24 +80,50 @@ export async function create(
   )
 
   if (!createResult.error) {
-    const loginResult = await login(username, password)
+    const loginResult = await loginOrCreate(
+      signInWithEmailAndPassword,
+      username,
+      password
+    )
 
     await updateProfile(Firebase.getAuth().currentUser, {
       displayName: definedDisplayName,
     })
 
+    updateToken(loginResult.sessionToken, definedDisplayName)
+
     return {
-      ...loginResult,
+      ...updateToken(loginResult.sessionToken, definedDisplayName),
       displayName: definedDisplayName,
       isProfileUpdated: true,
     }
   }
 
-  return { ...createResult, isProfileUpdated: false }
+  return {
+    ...updateToken(createResult.sessionToken, null, createResult.error),
+    isProfileUpdated: false,
+  }
 }
 
 export async function login(username: string, password: string) {
-  return await loginOrCreate(signInWithEmailAndPassword, username, password)
+  if (auth$.value.pending) {
+    return
+  }
+
+  auth$.next({
+    sessionToken: null,
+    displayName: null,
+    error: undefined,
+    pending: true,
+  })
+
+  const result = await loginOrCreate(
+    signInWithEmailAndPassword,
+    username,
+    password
+  )
+
+  return updateToken(result.sessionToken, result.displayName, result.error)
 }
 
 export async function confirmPasswordResetEmail(
@@ -156,29 +204,20 @@ async function loginOrCreate(
   username: string,
   password: string
 ): Promise<AuthResponse> {
-  if (!auth$.value.pending) {
-    auth$.next({
+  try {
+    const userCredential = await fn(Firebase.getAuth(), username, password)
+    return {
+      sessionToken: await userCredential.user.getIdToken(false),
+      displayName: userCredential.user.displayName,
+      error: undefined,
+      pending: false,
+    }
+  } catch (error) {
+    return {
       sessionToken: null,
       displayName: null,
-      error: undefined,
-      pending: true,
-    })
-
-    try {
-      const userCredential = await fn(Firebase.getAuth(), username, password)
-      return updateToken(
-        await userCredential.user.getIdToken(false),
-        userCredential.user.displayName
-      )
-    } catch (error) {
-      const result = {
-        sessionToken: null,
-        displayName: null,
-        error: error.message,
-        pending: false,
-      }
-      auth$.next(result)
-      return result
+      error: error.message,
+      pending: false,
     }
   }
 }

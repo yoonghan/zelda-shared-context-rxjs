@@ -89,9 +89,20 @@ describe('authentication', () => {
       }, 200)
     })
 
-    it("should skip double relogin relogin when it's pending", () => {
-      login('invaliduser', 'invalidpassword')
-      login('invaliduser', 'invalidpassword')
+    it("should skip double relogin when it's pending", () => {
+      login('someuser', 'somepassword')
+      login('someuser', 'somepassword')
+      expect(auth$.value).toStrictEqual({
+        displayName: null,
+        sessionToken: null,
+        error: undefined,
+        pending: true,
+      })
+    })
+
+    it("should skip double create when it's pending", () => {
+      create('someuser', 'somepassword')
+      create('someuser', 'somepassword')
       expect(auth$.value).toStrictEqual({
         displayName: null,
         sessionToken: null,
