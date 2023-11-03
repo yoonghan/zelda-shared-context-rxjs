@@ -1,4 +1,5 @@
 import {
+  auth$,
   changePassword,
   confirmPasswordResetEmail,
   create,
@@ -82,6 +83,18 @@ describe('authenticate', () => {
     const newPassword = 'def123'
     const oldDisplayName = 'alice'
     const newDisplayName = 'gaia'
+
+    beforeEach(async () => {
+      const waitPendingComplete = new Promise((res) => {
+        const pendingCheck = setInterval(() => {
+          if (auth$.value.pending === false) {
+            clearInterval(pendingCheck)
+            res('ok')
+          }
+        }, 1000)
+      })
+      await waitPendingComplete
+    })
 
     it('should be able to create user', async () => {
       const result = await create(username, oldPassword, oldDisplayName)
