@@ -37,7 +37,13 @@ jest.mock('firebase/auth', () => ({
       throw new Error('fail to create user.')
     }
     return {
-      ...mockedUser,
+      user: {
+        getIdToken: () =>
+          new Promise((resolve) => {
+            resolve('testToken')
+          }),
+        displayName: undefined,
+      },
       username,
     }
   },
