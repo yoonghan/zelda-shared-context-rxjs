@@ -90,6 +90,8 @@ export async function create(
       displayName: definedDisplayName,
     })
 
+    updateToken(loginResult.sessionToken, definedDisplayName)
+
     return {
       ...updateToken(loginResult.sessionToken, definedDisplayName),
       displayName: definedDisplayName,
