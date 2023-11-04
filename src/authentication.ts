@@ -80,20 +80,12 @@ export async function create(
   )
 
   if (!createResult.error) {
-    const loginResult = await loginOrCreate(
-      signInWithEmailAndPassword,
-      username,
-      password
-    )
-
     await updateProfile(Firebase.getAuth().currentUser, {
       displayName: definedDisplayName,
     })
 
-    updateToken(loginResult.sessionToken, definedDisplayName)
-
     return {
-      ...updateToken(loginResult.sessionToken, definedDisplayName),
+      ...updateToken(createResult.sessionToken, definedDisplayName),
       displayName: definedDisplayName,
       isProfileUpdated: true,
     }
