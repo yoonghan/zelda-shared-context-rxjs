@@ -56,13 +56,7 @@ export async function create(
   displayName?: string
 ): Promise<AuthWithProfileResponse> {
   if (auth$.value.pending) {
-    return {
-      sessionToken: null,
-      displayName: null,
-      error: undefined,
-      pending: false,
-      isProfileUpdated: false,
-    }
+    return { ...auth$.value, isProfileUpdated: false }
   }
 
   auth$.next({
@@ -79,21 +73,22 @@ export async function create(
     password
   )
 
-  if (!createResult.error) {
+  const isCreated = !createResult.error
+
+  if (isCreated) {
     await updateProfile(Firebase.getAuth().currentUser, {
       displayName: definedDisplayName,
     })
-
-    return {
-      ...updateToken(createResult.sessionToken, definedDisplayName),
-      displayName: definedDisplayName,
-      isProfileUpdated: true,
-    }
   }
 
   return {
-    ...updateToken(createResult.sessionToken, null, createResult.error),
-    isProfileUpdated: false,
+    ...updateToken(
+      createResult.sessionToken,
+      isCreated ? definedDisplayName : null,
+      createResult.error,
+      false
+    ),
+    isProfileUpdated: isCreated,
   }
 }
 
@@ -115,7 +110,12 @@ export async function login(username: string, password: string) {
     password
   )
 
-  return updateToken(result.sessionToken, result.displayName, result.error)
+  return updateToken(
+    result.sessionToken,
+    result.displayName,
+    result.error,
+    false
+  )
 }
 
 export async function confirmPasswordResetEmail(
@@ -195,21 +195,19 @@ async function loginOrCreate(
   fn: (auth: Auth, email: string, password: string) => Promise<UserCredential>,
   username: string,
   password: string
-): Promise<AuthResponse> {
+) {
   try {
     const userCredential = await fn(Firebase.getAuth(), username, password)
     return {
       sessionToken: await userCredential.user.getIdToken(false),
       displayName: userCredential.user.displayName,
       error: undefined,
-      pending: false,
     }
   } catch (error) {
     return {
       sessionToken: null,
       displayName: null,
       error: error.message,
-      pending: false,
     }
   }
 }
@@ -230,7 +228,12 @@ export const updateUserLogin = (user) => {
     })
   } else {
     user.getIdToken(false).then((idToken) => {
-      updateToken(idToken, user.displayName)
+      updateToken(
+        idToken,
+        user.displayName,
+        auth$.value.error,
+        auth$.value.pending
+      )
     })
   }
 }
