@@ -262,12 +262,18 @@ describe('authentication', () => {
   })
 
   describe('updateUser', () => {
-    it('should be able to update user', async () => {
-      expect(
-        await updateUser({ displayName: 'micheal jackson' })
-      ).toStrictEqual({
-        isProfileUpdated: true,
-        error: undefined,
+    it('should be able to update user', (done) => {
+      const updatedName = 'micheal jackson'
+      updateUser({ displayName: updatedName }).then((response) => {
+        expect(response).toStrictEqual({
+          isProfileUpdated: true,
+          error: undefined,
+        })
+
+        setTimeout(() => {
+          expect(auth$.value.displayName).toBe(updatedName)
+        }, 200)
+        done()
       })
     })
 

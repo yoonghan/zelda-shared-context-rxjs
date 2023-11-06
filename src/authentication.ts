@@ -257,6 +257,7 @@ export async function updateUser(
     await updateProfile(Firebase.getAuth().currentUser, {
       displayName: updateUserRequest.displayName,
     })
+    updateUserLogin(Firebase.getAuth().currentUser)
     return {
       isProfileUpdated: true,
       error: undefined,
