@@ -5,11 +5,13 @@ import {
   changePassword,
   confirmPasswordResetEmail,
   create,
+  getUserAdditionalInfo,
   login,
   logout,
   removeUser,
   resetEmail,
   updateUser,
+  updateUserAdditionalInfo,
   updateUserLogin,
 } from './authentication'
 import {
@@ -282,6 +284,37 @@ describe('authentication', () => {
       expect(await updateUser({ displayName: 'invalidUser' })).toStrictEqual({
         isProfileUpdated: false,
         error: 'Firebase - Cannot update user.',
+      })
+    })
+  })
+
+  describe('updateUserAdditionalInfo', () => {
+    beforeEach(() => {
+      localStorage.clear()
+    })
+
+    const sampleInfo = {
+      contacts: [{ phoneNumber: 123 }],
+      mailingAddress: { address: 'Balister Rd' },
+      preferences: { theme: 'dark' },
+    }
+
+    it('should store userinfo', async () => {
+      const result = await updateUserAdditionalInfo(sampleInfo)
+      expect(result.isAdditionaUserInfoUpdated).toBeTruthy()
+    })
+
+    it('can override and store partial userinfo', async () => {
+      await updateUserAdditionalInfo(sampleInfo)
+
+      const result2 = await updateUserAdditionalInfo({
+        preferences: { theme: 'light' },
+      })
+
+      expect(result2.isAdditionaUserInfoUpdated).toBeTruthy()
+      expect(await getUserAdditionalInfo()).toStrictEqual({
+        ...sampleInfo,
+        preferences: { theme: 'light' },
       })
     })
   })

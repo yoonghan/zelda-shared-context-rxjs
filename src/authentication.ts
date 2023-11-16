@@ -21,9 +21,14 @@ import {
 } from './type/ChangePassword'
 import type { RemoveUser } from './type/RemoveUser'
 import type { UpdateUserRequest, UpdateUserResponse } from './type/UpdateUser'
+import type {
+  UpdateUserAdditionalInfo,
+  UpdateUserAdditionalInfoResponse,
+} from './type/updateUserAdditionalInfo'
 
 export const SESSION_KEY = 'sessionToken'
-export const DISPLAYNAME_KEY = 'sessionToken'
+export const DISPLAYNAME_KEY = 'displayToken'
+export const ADDITIONALINFO_KEY = 'additionalInfoToken'
 
 const updateToken = (
   idToken: string,
@@ -271,6 +276,25 @@ export async function updateUser(
       error: error.message,
     }
   }
+}
+
+export async function updateUserAdditionalInfo(
+  updateUserAdditionalInfoRequest: Partial<UpdateUserAdditionalInfo>
+): Promise<UpdateUserAdditionalInfoResponse> {
+  const additionalInfo = (await getUserAdditionalInfo()) || {}
+  localStorage.setItem(
+    ADDITIONALINFO_KEY,
+    JSON.stringify({ ...additionalInfo, ...updateUserAdditionalInfoRequest })
+  )
+
+  return {
+    isAdditionaUserInfoUpdated: true,
+    error: "Information is store into browser's memory only.",
+  }
+}
+
+export async function getUserAdditionalInfo(): Promise<UpdateUserAdditionalInfo> {
+  return JSON.parse(localStorage.getItem(ADDITIONALINFO_KEY))
 }
 
 function init() {
